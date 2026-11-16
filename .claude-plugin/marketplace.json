@@ -1,0 +1,11 @@
+{
+  "name": "amin-skills",
+  "owner": { "name": "Amin-Berjaoui-Tahmaz" },
+  "plugins": [
+    {
+      "name": "amin-skills",
+      "source": "./",
+      "description": "Agent skills I use day to day with Claude."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "amin-skills",
+  "description": "Agent skills I use day to day with Claude.",
+  "version": "0.1.0",
+  "author": { "name": "Amin-Berjaoui-Tahmaz" },
+  "license": "MIT"
+}
