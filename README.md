@@ -18,6 +18,7 @@ Each one is a folder under [`skills/`](skills) with a `SKILL.md` that tells Clau
 
 | Skill | What it does |
 |---|---|
+| [buy-research](skills/buy-research) | Turns "which X should I buy?" into a verdict-first pick: sizes the research to the stakes (quick / standard / deep), weighs lab tests and long-term owner reports over affiliate listicles, and compares landed prices across local, cross-border and China-direct shops. |
 | [flight-deal-finder](skills/flight-deal-finder) | Finds the cheapest flights across several origin airports and date windows under hard constraints (max stops, duration, layover, no self-transfer), prices every mix-and-match airport pairing plus cabin-bag and flexible fares, and delivers a visual dashboard. |
 
 <!-- Add a screenshot: docs/flight-deal-finder.png -->

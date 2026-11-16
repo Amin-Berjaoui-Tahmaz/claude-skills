@@ -35,7 +35,7 @@ Restate the full spec in one line, then start.
 - **Use query URLs, not the form:**
   `https://www.google.com/travel/flights?q=One%20way%20flights%20from%20LHR%20to%20ATH%20on%202027-03-14&curr=EUR&hl=en`
   - Multi-airport `q=` strings and filtered `tfs=` search URLs often show "Oops, something went wrong". Click Reload once; if it fails again, fall back to one airport per query.
-  - Some airport codes are misparsed (e.g. ENS). Check the page title says the right city pair.
+  - Some airport codes are misparsed, especially small regional ones. Check the page title says the right city pair.
 - **Price each direction as a one-way**, for every airport × date. Any combination's price is then outbound + return, so this covers all open-jaw pairings.
   - Afterwards, also check round trips that start and end at the same airport. Sometimes a single ticket is cheaper. Note it if not.
 - **Don't trust the date grid or price graph alone.** They ignore duration and layover limits and show stale or impossible fares. Use them only to narrow dates, then verify by reading the actual flights.
