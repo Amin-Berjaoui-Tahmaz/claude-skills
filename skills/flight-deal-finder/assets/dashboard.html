@@ -1,0 +1,520 @@
+<meta name="dash-one-writer">
+<style>
+.fx { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: flex; flex-direction: column; gap: 40px; max-width: 880px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+.fx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; letter-spacing: -0.01em; }
+.fx h2 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-md); }
+.fx .lede { margin: 6px 0 0; color: var(--color-fg-muted); }
+.fx .lede b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.fx .meta { margin: 10px 0 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.fx .num { font-variant-numeric: tabular-nums; }
+
+/* boarding pass */
+.fx .pass { border: 1px solid var(--color-border-line); border-radius: 14px; background: var(--color-panel); overflow: hidden; }
+.fx .pass-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding: 22px 24px 18px; flex-wrap: wrap; }
+.fx .route { font-family: var(--font-anthropic-serif); font-size: 40px; line-height: 1; letter-spacing: 0.02em; }
+.fx .route span { color: var(--color-fg-muted); font-size: 28px; padding: 0 10px; }
+.fx .route-sub { margin-top: 6px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.fx .price { text-align: right; }
+.fx .price .big { font-family: var(--font-anthropic-serif); font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+.fx .price .cap { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 4px; }
+.fx .perf { border-top: 1px dashed var(--color-border-line); margin: 0 12px; }
+.fx .legs { padding: 6px 24px 8px; }
+.fx .leg { display: grid; grid-template-columns: 54px 92px 56px 1fr auto; gap: 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--color-border-line); font-size: var(--cds-font-size-body); }
+.fx .leg:last-child { border-bottom: 0; }
+.fx .leg .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: .06em; }
+.fx .leg .t { font-variant-numeric: tabular-nums; }
+.fx .leg .d { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+@media (max-width: 560px) { .fx .leg { grid-template-columns: 44px 1fr auto; } .fx .leg .hide-s { display: none; } }
+.fx .addons { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid var(--color-border-line); }
+.fx .addon { flex: 1 1 140px; padding: 12px 24px; border-right: 1px solid var(--color-border-line); }
+.fx .addon:last-child { border-right: 0; }
+.fx .addon .cap { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.fx .addon .v { font-size: 20px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+/* switch */
+.fx .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: var(--cds-gap-md); }
+.fx .bar h2 { margin: 0; }
+.fx .seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 2px; }
+.fx .seg button { all: unset; cursor: pointer; font-size: var(--cds-font-size-caption); padding: 5px 12px; border-radius: 999px; color: var(--color-fg-muted); }
+.fx .seg button[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); }
+.fx .seg button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 1px; }
+
+/* tables */
+.fx .wrap { overflow-x: auto; position: relative; }
+.fx table.m { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.fx table.m th { font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--cds-text-secondary); text-align: right; padding: 8px 12px; white-space: nowrap; border-bottom: 1px solid var(--color-border-line); }
+.fx table.m th.rh { text-align: left; border-bottom: 1px solid var(--color-border-line); }
+.fx table.m th .city { display: block; font-weight: 400; color: var(--color-fg-muted); font-size: 11px; }
+.fx table.m td { text-align: right; padding: 10px 12px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; cursor: default; }
+.fx table.m tbody tr:last-child td, .fx table.m tbody tr:last-child th { border-bottom: 0; }
+.fx table.m td .v { font-size: var(--cds-font-size-body); }
+.fx table.m td .s { display: block; font-size: 11px; color: var(--color-fg-muted); }
+.fx table.m td.none { color: var(--color-fg-muted); }
+.fx table.m td.best { font-weight: var(--cds-font-weight-medium); }
+.fx table.m td.hl { background: var(--color-panel); opacity: 1 !important; }
+.fx #dates table.m td .v { font-size: var(--cds-font-size-body); }
+.fx .pline { position: relative; margin: 4px 0 6px; min-height: 96px; }
+.fx .pline svg text { font-family: var(--font-anthropic-sans); }
+.fx table.big td .v { font-size: 20px; }
+.fx .two { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; }
+@media (max-width: 720px) { .fx .two { grid-template-columns: 1fr; } }
+.fx .foot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 10px 0 0; }
+
+/* folded */
+.fx details { border-top: 1px solid var(--color-border-line); padding: 14px 0 0; }
+.fx summary { cursor: pointer; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); list-style: none; }
+.fx summary::-webkit-details-marker { display: none; }
+.fx summary::before { content: '+'; display: inline-block; width: 18px; color: var(--color-fg-muted); }
+.fx details[open] summary::before { content: '−'; }
+.fx details .body { padding: 12px 0 4px 18px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.fx details .body p { margin: 0 0 8px; }
+.fx .bars { position: relative; min-height: 120px; }
+.fx .bars svg text { font-size: 12px; fill: var(--color-fg); }
+.fx .bars svg text.muted { fill: var(--cds-text-secondary); }
+
+.fx .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: 6px; padding: 6px 8px; font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 5; color: var(--color-fg); }
+.fx [data-dash-source-state=refreshing] { opacity: .5; }
+
+/* one accent colour, only for "the answer": recommended price, best cells, cheapest dot, active switch */
+.fx { --fx-acc: #1d7a5a; --fx-acc-ink: #ffffff; }
+@media (prefers-color-scheme: dark) { .fx { --fx-acc: #5cc49a; --fx-acc-ink: #0c2a1f; } }
+.fx .price .big, .fx .lede b { color: var(--fx-acc); }
+.fx .route-sub .rec { color: var(--fx-acc); font-weight: var(--cds-font-weight-medium); }
+.fx table.m td.best, .fx table.m td.best .s { color: var(--fx-acc); }
+.fx .seg button[aria-pressed=true] { background: var(--fx-acc); color: var(--fx-acc-ink); }
+.fx .seg button:focus-visible { outline-color: var(--fx-acc); }
+</style>
+
+<div class="fx">
+  <header id="top">
+    <h1 data-draw="cfgTitle">—</h1>
+    <p class="lede"><span data-draw="cfgLede">—</span> <b data-draw="recLede">—</b> return. <span data-draw="cheapNote"></span></p>
+    <p class="meta" data-draw="cfgMeta">—</p>
+  </header>
+
+  <section id="pass" class="pass" aria-label="Recommended trip">
+    <div class="pass-top">
+      <div>
+        <div class="route" data-draw="cfgRoute">—</div>
+        <div class="route-sub"><span class="rec">Recommended</span> · <span data-draw="cfgWhy">—</span></div>
+      </div>
+      <div class="price">
+        <div class="big" data-draw="recBase">—</div>
+        <div class="cap">return, fare only</div>
+      </div>
+    </div>
+    <div class="perf"></div>
+    <div class="legs" data-draw="recLegs"></div>
+    <div class="addons">
+      <div class="addon"><div class="cap">With cabin bag</div><div class="v" data-draw="recCabin">—</div></div>
+      <div class="addon"><div class="cap">Flexible, cabin bag included</div><div class="v" data-draw="recFlex">—</div></div>
+    </div>
+  </section>
+
+  <section id="matrix">
+    <div class="bar">
+      <h2>Every airport combination</h2>
+      <div class="seg" role="group" aria-label="Price shown">
+        <button type="button" data-mode="fare" aria-pressed="true">Fare only</button>
+        <button type="button" data-mode="cabin" aria-pressed="false">+ Cabin bag</button>
+        <button type="button" data-mode="flex" aria-pressed="false">Flexible</button>
+      </div>
+    </div>
+    <div class="pline" data-draw="priceLine"></div>
+    <div class="wrap" data-draw="comboGrid"></div>
+    <p class="foot">Return total in euros, each leg on its cheapest valid date. Darker means cheaper; small numbers are the extra cost over the cheapest. Green: within €<span data-draw="bestWithin">—</span> of the cheapest. Rows: where you fly out from. Columns: where you fly back to. ≥ means at least: <span data-draw="cfgAtLeast">—</span></p>
+  </section>
+
+  <section id="dates">
+    <h2>Fares by date</h2>
+    <div class="two">
+      <div><div class="foot" style="margin:0 0 6px">Outbound, one-way to <span data-draw="cfgDest">—</span></div><div class="wrap" data-draw="outGrid"></div></div>
+      <div><div class="foot" style="margin:0 0 6px">Return, one-way from <span data-draw="cfgDest">—</span></div><div class="wrap" data-draw="backGrid"></div></div>
+    </div>
+  </section>
+
+  <div>
+    <details id="alts">
+      <summary>Other ways to book</summary>
+      <div class="body"><div class="bars" data-draw="altBars" data-source="combos alternatives"></div></div>
+    </details>
+    <details id="notes" style="margin-top:14px">
+      <summary>Notes and method</summary>
+      <div class="body" data-draw="cfgNotes"></div>
+    </details>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG: the only block a run edits. Everything below it is the fixed design. ===== */
+window.FX_CONFIG = {
+  title: 'Netherlands → Beirut, Christmas 2026',
+  dest: { code: 'BEY', city: 'Beirut' },
+  // origin airports in matrix order: code → city
+  airports: { AMS: 'Amsterdam', EIN: 'Eindhoven', RTM: 'Rotterdam' },
+  // the recommended pair (the person's practical pick, not always the cheapest)
+  rec: { out: 'AMS', back: 'AMS' },
+  recLede: 'Fly Amsterdam both ways for',           // header sentence, followed by the price
+  recWhy: 'Amsterdam both ways, closest to Rotterdam', // under "Recommended" on the boarding pass
+  cheaperBut: 'Schiphol is closer to Rotterdam',     // "...is €N cheaper (€M), but <this>." when another pair is cheaper
+  recBooking: 'AJet out, Pegasus back',              // tooltip on the recommended bar in "Other ways to book"
+  meta: 'Out 17–21 Dec · back 3–5 Jan · max 1 stop · max 10 h each way · layover 1 h+ · no self-transfer · 1 adult · Google Flights: Amsterdam fares 17 Nov, Eindhoven and Rotterdam 15 Nov',
+  noFit: 'nothing under 10 h with 1 stop or fewer',  // tooltip on a date with no valid flight
+  bestWithin: 25,                                    // € above the cheapest that still counts as "best" (interview answer)
+  flexFromAirlines: ['AJet'],                        // airlines whose flex add-on is a "from" price: shown with ≥
+  atLeastNote: 'AJet\'s cancellation add-on is a "from" price.',
+  notes: [                                           // "Notes and method": [bold lead, text]
+    ['Two separate tickets.', 'Each direction is one booking, so its connection is protected. A change to one ticket doesn\'t cover the other.'],
+    ['Cabin bag.', 'AJet sells it on its own (ajet.com price list). On Pegasus it comes with the Saver fare, which also includes a checked bag; a cabin bag bought on its own with the Light fare may be cheaper.'],
+    ['Flexible.', 'AJet: the Flex add-on (refund or free change up to 12 h before departure), advertised as a "from" price. Pegasus: the Saver Plus fare (free change, full refund). Check the fare rules when booking.'],
+    ['Airports not shown.', 'Groningen and Maastricht have no route that fits. Lelystad isn\'t open to commercial flights; Twente has no scheduled routes.'],
+    ['Prices move.', 'Fares are snapshots: Amsterdam re-checked 17 Nov, Eindhoven and Rotterdam from 15 Nov. Google shows an air-traffic disruption warning on this route.'],
+  ],
+};
+/* ===== end CONFIG ===== */
+
+// draw the CONFIG words into their slots
+(() => {
+  const C = window.FX_CONFIG;
+  const words = { cfgTitle: C.title, cfgLede: C.recLede, cfgMeta: C.meta, cfgWhy: C.recWhy, cfgDest: C.dest.city, cfgAtLeast: C.atLeastNote };
+  Object.entries(words).forEach(([name, text]) => dash.draw(name, (el) => { el.textContent = text; }));
+  dash.draw('cfgRoute', (el) => {
+    const arr = document.createElement('span'); arr.textContent = '⇄';
+    const from = C.rec.out === C.rec.back ? C.rec.out : `${C.rec.out}/${C.rec.back}`;
+    el.replaceChildren(from, arr, C.dest.code);
+  });
+  dash.draw('cfgNotes', (el) => {
+    el.replaceChildren(...C.notes.map(([lead, text]) => {
+      const p = document.createElement('p'); const b = document.createElement('b'); b.textContent = lead;
+      p.append(b, ' ' + text); return p;
+    }));
+  });
+})();
+</script>
+
+<script>
+window.FX = (() => {
+  const C = window.FX_CONFIG;
+  const REC = C.rec;
+  const names = C.airports;
+  const airports = Object.keys(C.airports);
+  const parse = d3.utcParse('%Y-%m-%d');
+  const fmtDay = d3.utcFormat('%a %-d %b');
+  const eur = (v) => '€' + d3.format(',')(v);
+  const hm = (m) => m == null ? '' : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
+  const modes = { fare: { calc: 'combos', field: 'fare' }, cabin: { calc: 'combosCabin', field: 'cabin' }, flex: { calc: 'combosFlex', field: 'flex' } };
+  const state = { mode: 'fare' };
+  const accent = () => dash.colors[0];
+  // ink weight: cheapest is full ink and medium weight, the most expensive fades to 38% ink
+  const inkOf = (v, min, max) => max > min ? 1 - ((v - min) / (max - min)) * 0.62 : 1;
+  // the person's threshold: anything within this many euros of the cheapest counts as "best" (green)
+  const BEST_WITHIN = C.bestWithin;
+  const isBest = (v, min) => v - min <= BEST_WITHIN;
+  const ink = (td, v, min, max) => { td.style.opacity = inkOf(v, min, max).toFixed(2); if (isBest(v, min)) td.classList.add('best'); };
+  return { REC, names, airports, parse, fmtDay, eur, hm, modes, state, ink, inkOf, isBest, BEST_WITHIN };
+})();
+
+/* ---------- calcs ---------- */
+window.FXcombo = (oneway, extras, field) => {
+  const add = new Map(extras.map((e) => [`${e.direction}|${e.airport}|${e.date}`, e]));
+  const best = (dir, ap) => {
+    const rows = oneway.filter((r) => r.direction === dir && r.airport === ap && r.price != null)
+      .map((r) => {
+        const e = add.get(`${dir}|${ap}|${r.date}`);
+        const a = field ? (e ? e[field] : null) : 0;
+        return a == null ? null : { date: r.date, price: +r.price + +a, airline: r.airline, atLeast: field === 'flex_add' && window.FX_CONFIG.flexFromAirlines.includes(r.airline) };
+      }).filter(Boolean);
+    if (!rows.length) return null;
+    const min = d3.min(rows, (r) => r.price);
+    const hit = rows.filter((r) => r.price === min);
+    return { price: min, dates: hit.map((r) => r.date).join(' '), airline: hit[0].airline, atLeast: hit.some((r) => r.atLeast) };
+  };
+  const aps = [...new Set(oneway.map((r) => r.airport))];
+  const out = [];
+  for (const o of aps) for (const b of aps) {
+    const bo = best('out', o), bb = best('back', b);
+    if (!bo || !bb) continue;
+    out.push({ key: `${o}-${b}`, out: o, back: b, total: bo.price + bb.price, outPrice: bo.price, backPrice: bb.price, outDates: bo.dates, backDates: bb.dates, outAirline: bo.airline, backAirline: bb.airline, atLeast: bo.atLeast || bb.atLeast });
+  }
+  out.sort((a, b) => a.total - b.total);
+  out.forEach((r) => { r.delta = r.total - out[0].total; });
+  return out;
+};
+dash.calc('combos', {
+  title: 'Every airport combination, fare only',
+  description: 'For each departure and return airport, the cheapest valid one-way each way, added together.',
+  inputs: ['oneway', 'extras'],
+  fn: (oneway, extras) => window.FXcombo(oneway, extras, null),
+});
+dash.calc('combosCabin', {
+  title: 'Every airport combination, with a cabin bag',
+  description: 'Each leg: fare plus the cabin-bag add-on for that flight; cheapest date per airport, out and back added together.',
+  inputs: ['oneway', 'extras'],
+  fn: (oneway, extras) => window.FXcombo(oneway, extras, 'cabin_add'),
+});
+dash.calc('combosFlex', {
+  title: 'Every airport combination, flexible fare',
+  description: 'Each leg: fare plus the flexible-fare add-on (cabin bag included); cheapest date per airport, out and back added together.',
+  inputs: ['oneway', 'extras'],
+  fn: (oneway, extras) => window.FXcombo(oneway, extras, 'flex_add'),
+});
+dash.calc('legs', {
+  title: 'One-way price per airport and date, per option',
+  description: 'Each one-way fare, and the same fare with a cabin bag or as a flexible ticket.',
+  inputs: ['oneway', 'extras'],
+  fn: (oneway, extras) => {
+    const add = new Map(extras.map((e) => [`${e.direction}|${e.airport}|${e.date}`, e]));
+    const rows = oneway.map((r) => {
+      const e = add.get(`${r.direction}|${r.airport}|${r.date}`) || {};
+      const p = r.price == null ? null : +r.price;
+      return { key: `${r.direction}|${r.airport}|${r.date}`, direction: r.direction, airport: r.airport, date: r.date, airline: r.airline, departs: r.departs, duration_min: r.duration_min, layover_min: r.layover_min, via: r.via,
+        fare: p, cabin: p == null || e.cabin_add == null ? null : p + +e.cabin_add, flex: p == null || e.flex_add == null ? null : p + +e.flex_add, flexAtLeast: window.FX_CONFIG.flexFromAirlines.includes(r.airline) };
+    });
+    // extra cost over the cheapest one-way in the same direction, per option
+    for (const dir of ['out', 'back']) for (const f of ['fare', 'cabin', 'flex']) {
+      const vals = rows.filter((r) => r.direction === dir && r[f] != null).map((r) => r[f]);
+      const min = vals.length ? Math.min(...vals) : null;
+      rows.filter((r) => r.direction === dir).forEach((r) => { r[f + 'Delta'] = r[f] == null || min == null ? null : r[f] - min; });
+    }
+    return rows;
+  },
+});
+
+/* ---------- helpers ---------- */
+function fxTip(wrap) {
+  let tip = wrap.querySelector(':scope > .tip');
+  if (!tip) { tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; wrap.appendChild(tip); }
+  return {
+    show(ev, text) {
+      tip.textContent = text; tip.hidden = false;
+      const r = wrap.getBoundingClientRect(), t = ev.currentTarget.getBoundingClientRect();
+      const x = Math.min(Math.max(0, t.left - r.left + wrap.scrollLeft), Math.max(0, wrap.clientWidth - tip.offsetWidth));
+      tip.style.left = x + 'px'; tip.style.top = (t.top - r.top - tip.offsetHeight - 6) + 'px';
+    },
+    hide() { tip.hidden = true; },
+  };
+}
+function fxHover(td, tip, txt) {
+  td.tabIndex = 0;
+  td.onmouseenter = (ev) => tip.show(ev, txt); td.onfocus = (ev) => tip.show(ev, txt);
+  td.onmouseleave = () => tip.hide(); td.onblur = () => tip.hide();
+}
+function fxStatus(el, s) { el.textContent = s === 'error' ? 'Failed to load' : '—'; }
+
+/* ---------- mode switch ---------- */
+document.querySelectorAll('.fx .seg button').forEach((b) => b.addEventListener('click', () => {
+  window.FX.state.mode = b.dataset.mode;
+  document.querySelectorAll('.fx .seg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  ['priceLine', 'comboGrid', 'outGrid', 'backGrid'].forEach((n) => dash.draw(n));
+}));
+
+/* ---------- header ---------- */
+function fxCheapest() { const c = dash.data('combos'); return c.status === 'ok' && c.data && c.data.length ? c.data[0] : null; }
+dash.draw('recLede', (el) => fxRecDraw(el, 'combos'));
+dash.draw('bestWithin', (el) => { el.textContent = String(window.FX.BEST_WITHIN); });
+// only says something when a different combination is cheaper than the recommended one
+dash.draw('cheapNote', (el) => {
+  const c = fxCheapest(), r = fxRec('combos'); const { names, eur } = window.FX;
+  el.replaceChildren();
+  if (!c || !r || c.key === r.key) return;
+  const mk = (txt, row, field) => { const s = document.createElement('span'); s.textContent = txt; s.dataset.source = 'combos'; s.dataset.field = field; s.dataset.where = `key=${row.key}`; return s; };
+  el.append(
+    document.createTextNode(`Out from ${names[c.out]}${c.back !== r.back ? `, back into ${names[c.back]},` : ''} is €`),
+    mk(String(r.delta), r, 'delta'),
+    document.createTextNode(' cheaper ('),
+    mk(eur(c.total), c, 'total'),
+    document.createTextNode(`), but ${window.FX_CONFIG.cheaperBut}.`),
+  );
+});
+
+/* ---------- boarding pass ---------- */
+function fxRec(id) { const c = dash.data(id); const { REC } = window.FX; return c.status === 'ok' && c.data ? c.data.find((x) => x.out === REC.out && x.back === REC.back) : null; }
+function fxRecDraw(el, id) {
+  const r = fxRec(id); const { REC, eur } = window.FX;
+  el.textContent = r ? (r.atLeast ? '≥ ' : '') + eur(r.total) : '—';
+  el.dataset.source = id; el.dataset.field = 'total'; el.dataset.where = `key=${REC.out}-${REC.back}`;
+}
+dash.draw('recBase', (el) => fxRecDraw(el, 'combos'));
+dash.draw('recCabin', (el) => fxRecDraw(el, 'combosCabin'));
+dash.draw('recFlex', (el) => fxRecDraw(el, 'combosFlex'));
+
+dash.draw('recLegs', (el) => {
+  const d = dash.data('oneway');
+  if (d.status !== 'ok') { fxStatus(el, d.status); return; }
+  const { REC, names, parse, fmtDay, eur, hm } = window.FX;
+  el.replaceChildren();
+  [['out', REC.out, 'Out'], ['back', REC.back, 'Back']].forEach(([dir, ap, label]) => {
+    const rows = d.data.filter((r) => r.direction === dir && r.airport === ap && r.price != null);
+    if (!rows.length) return;
+    const min = d3.min(rows, (r) => +r.price);
+    const best = rows.filter((r) => +r.price === min);
+    const r = best[0];
+    const leg = document.createElement('div'); leg.className = 'leg';
+    const k = document.createElement('div'); k.className = 'k'; k.textContent = label;
+    const day = document.createElement('div'); day.className = 't'; day.textContent = best.map((x) => fmtDay(parse(x.date)).replace(/^\w+ /, '')).join(' / ');
+    const t = document.createElement('div'); t.className = 't hide-s'; t.textContent = r.departs;
+    const what = document.createElement('div');
+    what.textContent = `${r.airline} · ${hm(+r.duration_min)}`;
+    const via = document.createElement('span'); via.className = 'd'; via.textContent = ` · via ${r.via.replace(/ [A-Z]{3}$/, '')}`;
+    what.appendChild(via);
+    const price = document.createElement('div'); price.className = 't'; price.textContent = eur(r.price);
+    price.dataset.source = 'oneway'; price.dataset.field = 'price'; price.dataset.where = `direction=${dir}&airport=${ap}&date=${r.date}`;
+    leg.append(k, day, t, what, price); el.appendChild(leg);
+  });
+});
+
+/* ---------- combination matrix ---------- */
+dash.draw('comboGrid', (el) => {
+  const { airports, names, eur, parse, fmtDay, modes, state, ink } = window.FX;
+  const id = modes[state.mode].calc;
+  const c = dash.data(id);
+  if (c.status !== 'ok' || !c.data) { fxStatus(el, c.status); return; }
+  const min = d3.min(c.data, (r) => r.total), max = d3.max(c.data, (r) => r.total);
+  el.replaceChildren();
+  const table = document.createElement('table'); table.className = 'm big';
+  const hr = table.createTHead().insertRow();
+  const corner = document.createElement('th'); corner.className = 'rh'; corner.textContent = 'Out ↓  Back →'; hr.appendChild(corner);
+  airports.forEach((b) => { const th = document.createElement('th'); th.textContent = b; const s = document.createElement('span'); s.className = 'city'; s.textContent = names[b]; th.appendChild(s); hr.appendChild(th); });
+  const tb = table.createTBody(); const tip = fxTip(el);
+  airports.forEach((o) => {
+    const tr = tb.insertRow();
+    const th = document.createElement('th'); th.className = 'rh'; th.textContent = o; const s0 = document.createElement('span'); s0.className = 'city'; s0.textContent = names[o]; th.appendChild(s0); tr.appendChild(th);
+    airports.forEach((b) => {
+      const r = c.data.find((x) => x.out === o && x.back === b);
+      const td = tr.insertCell();
+      if (!r) { td.className = 'none'; td.textContent = '—'; return; }
+      ink(td, r.total, min, max);
+      td.dataset.key = r.key;
+      const v = document.createElement('span'); v.className = 'v'; v.textContent = (r.atLeast ? '≥ ' : '') + eur(r.total);
+      v.dataset.source = id; v.dataset.field = 'total'; v.dataset.where = `key=${r.key}`;
+      const s = document.createElement('span'); s.className = 's';
+      if (r.delta === 0) s.textContent = 'best';
+      else { s.textContent = '+€'; const n = document.createElement('span'); n.textContent = r.delta; n.dataset.source = id; n.dataset.field = 'delta'; n.dataset.where = `key=${r.key}`; s.appendChild(n); }
+      td.append(v, s);
+      td.addEventListener('mouseenter', () => window.FXlink(r.key, true)); td.addEventListener('mouseleave', () => window.FXlink(r.key, false));
+      const dd = (str) => str.split(' ').map((x) => fmtDay(parse(x))).join(' or ');
+      const city = window.FX_CONFIG.dest.city;
+      fxHover(td, tip, `${names[o]} → ${city} ${dd(r.outDates)}, ${r.outAirline} ${eur(r.outPrice)} · ${city} → ${names[b]} ${dd(r.backDates)}, ${r.backAirline} ${eur(r.backPrice)}`);
+    });
+  });
+  el.insertBefore(table, el.firstChild);
+});
+
+/* ---------- fares by date ---------- */
+function fxDates(el, dir) {
+  const { airports, names, parse, fmtDay, eur, hm, modes, state, ink } = window.FX;
+  const d = dash.data('legs');
+  if (d.status !== 'ok' || !d.data) { fxStatus(el, d.status); return; }
+  const f = modes[state.mode].field;
+  const rows = d.data.filter((r) => r.direction === dir);
+  const dates = [...new Set(rows.map((r) => r.date))].sort();
+  const min = d3.min(rows, (r) => r[f] == null ? Infinity : r[f]);
+  const max = d3.max(rows, (r) => r[f] == null ? -Infinity : r[f]);
+  el.replaceChildren();
+  const table = document.createElement('table'); table.className = 'm';
+  const hr = table.createTHead().insertRow();
+  const c0 = document.createElement('th'); c0.className = 'rh'; hr.appendChild(c0);
+  dates.forEach((dt) => { const th = document.createElement('th'); th.textContent = fmtDay(parse(dt)); hr.appendChild(th); });
+  const tb = table.createTBody(); const tip = fxTip(el);
+  airports.forEach((ap) => {
+    const tr = tb.insertRow();
+    const th = document.createElement('th'); th.className = 'rh'; th.textContent = ap; th.title = names[ap]; tr.appendChild(th);
+    dates.forEach((dt) => {
+      const r = rows.find((x) => x.airport === ap && x.date === dt);
+      const td = tr.insertCell();
+      if (!r || r[f] == null) { td.className = 'none'; td.textContent = '—'; if (r) fxHover(td, tip, `${names[ap]}, ${fmtDay(parse(dt))}: ${window.FX_CONFIG.noFit}`); return; }
+      ink(td, r[f], min, max);
+      const v = document.createElement('span'); v.className = 'v'; v.textContent = (f === 'flex' && r.flexAtLeast ? '≥' : '') + r[f];
+      v.dataset.source = 'legs'; v.dataset.field = f; v.dataset.where = `key=${r.key}`;
+      const s = document.createElement('span'); s.className = 's';
+      const dv = r[f + 'Delta'];
+      if (dv === 0) s.textContent = 'best';
+      else { s.textContent = '+'; const n = document.createElement('span'); n.textContent = dv; n.dataset.source = 'legs'; n.dataset.field = f + 'Delta'; n.dataset.where = `key=${r.key}`; s.appendChild(n); }
+      td.append(v, s);
+      fxHover(td, tip, `${fmtDay(parse(dt))} · ${r.airline} ${r.departs} · ${hm(+r.duration_min)}, ${hm(+r.layover_min)} stop in ${r.via} · ${eur(r[f])}`);
+    });
+  });
+  el.insertBefore(table, el.firstChild);
+}
+dash.draw('outGrid', (el) => fxDates(el, 'out'));
+dash.draw('backGrid', (el) => fxDates(el, 'back'));
+
+/* ---------- price line ---------- */
+window.FXlink = (key, on) => {
+  document.querySelectorAll('.fx [data-key]').forEach((n) => { if (n.dataset.key === key) n.classList.toggle('hl', on); });
+  document.querySelectorAll('.fx .pline circle').forEach((c) => {
+    const hit = c.dataset.k === key;
+    c.setAttribute('r', on && hit ? 11 : c.dataset.r);
+    c.style.opacity = on && hit ? 1 : c.dataset.o;
+  });
+};
+dash.draw('priceLine', (el) => {
+  const { airports, eur, modes, state, inkOf } = window.FX;
+  const id = modes[state.mode].calc;
+  const c = dash.data(id);
+  if (c.status !== 'ok' || !c.data) { fxStatus(el, c.status); return; }
+  const rows = c.data.filter((r) => airports.includes(r.out) && airports.includes(r.back));
+  const min = d3.min(rows, (r) => r.total), max = d3.max(rows, (r) => r.total);
+  el.replaceChildren();
+  const W = Math.max(300, el.clientWidth), H = 96, pad = 28;
+  const x = d3.scaleLinear().domain([min, max]).range([pad, W - pad]);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+    .attr('aria-label', 'Every airport combination placed on one price axis, cheapest on the left');
+  svg.append('line').attr('x1', pad).attr('x2', W - pad).attr('y1', 44).attr('y2', 44).style('stroke', 'var(--color-border-line)');
+  // nudge dots apart so none overlap (min 22px between centres), keeping them in price order and inside the line
+  const gap = 22, pos = new Map();
+  const sorted = [...rows].sort((a, b) => a.total - b.total);
+  const px = sorted.map((r) => x(r.total));
+  for (let i = 1; i < px.length; i++) px[i] = Math.max(px[i], px[i - 1] + gap);
+  if (px.length) px[px.length - 1] = Math.min(px[px.length - 1], W - pad);
+  for (let i = px.length - 2; i >= 0; i--) px[i] = Math.min(px[i], px[i + 1] - gap);
+  sorted.forEach((r, i) => pos.set(r.key, px[i]));
+  const groups = [];
+  rows.forEach((r) => { const g = groups.find((g) => Math.abs(x(g[0].total) - x(r.total)) < 30); g ? g.push(r) : groups.push([r]); });
+  groups.forEach((g) => {
+    const lo = d3.min(g, (r) => r.total), hi = d3.max(g, (r) => r.total), cx = d3.mean(g, (r) => pos.get(r.key));
+    const anyAtLeast = g.some((r) => r.atLeast);
+    svg.append('text').attr('x', cx).attr('y', 18).attr('text-anchor', 'middle').style('font-size', '12px')
+      .style('fill', lo === min ? 'var(--fx-acc)' : 'var(--color-fg)').style('opacity', inkOf(lo, min, max).toFixed(2)).style('font-weight', lo === min ? 500 : 400)
+      .text((anyAtLeast ? '≥' : '') + (lo === hi ? eur(lo) : `${eur(lo)}–${hi}`));
+    svg.append('text').attr('x', cx).attr('y', 72).attr('text-anchor', 'middle').style('font-size', '11px').style('fill', 'var(--color-fg-muted)')
+      .text(g.length === 1 ? `${g[0].out}→${g[0].back}` : `${g.length} options`);
+  });
+  rows.forEach((r) => {
+    const rr = r.total === min ? 9 : 7, o = inkOf(r.total, min, max).toFixed(2);
+    svg.append('circle').attr('cx', pos.get(r.key)).attr('cy', 44).attr('r', rr)
+      .attr('data-k', r.key).attr('data-r', rr).attr('data-o', o)
+      .style('fill', window.FX.isBest(r.total, min) ? 'var(--fx-acc)' : 'var(--color-fg)').style('opacity', o).style('stroke', 'var(--color-bg)').style('stroke-width', 2)
+      .on('mouseenter', () => window.FXlink(r.key, true)).on('mouseleave', () => window.FXlink(r.key, false));
+  });
+  svg.append('text').attr('x', pad).attr('y', 92).style('font-size', '10px').style('fill', 'var(--color-fg-muted)').text('cheaper');
+  svg.append('text').attr('x', W - pad).attr('y', 92).attr('text-anchor', 'end').style('font-size', '10px').style('fill', 'var(--color-fg-muted)').text('more expensive');
+});
+
+/* ---------- alternatives ---------- */
+document.querySelectorAll('.fx details#alts').forEach((d) => d.addEventListener('toggle', () => { if (d.open) dash.draw('altBars'); }));
+dash.draw('altBars', (el) => {
+  const c = dash.data('combos'), a = dash.data('alternatives');
+  if (c.status !== 'ok' || a.status !== 'ok' || !c.data) { fxStatus(el, c.status === 'error' || a.status === 'error' ? 'error' : 'loading'); return; }
+  const { REC, eur } = window.FX;
+  const rec = c.data.find((x) => x.out === REC.out && x.back === REC.back);
+  const items = [{ label: 'Recommended, two one-ways', price: rec ? rec.total : null, rec: true }, ...a.data.map((r) => ({ label: r.option, price: +r.price, note: r.note }))].filter((x) => x.price != null);
+  if (!el.clientWidth) { el.textContent = '—'; return; } // still folded: drawn again when opened
+  el.replaceChildren();
+  // label on its own line above each bar, so no text needs measuring and nothing is cut off
+  const W = el.clientWidth, rowH = 42, H = items.length * rowH, valW = 64;
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+    .attr('aria-label', 'Return price of the recommended trip compared with single-ticket and full-service options');
+  const x = d3.scaleLinear().domain([0, d3.max(items, (d) => d.price)]).range([0, Math.max(40, W - valW)]);
+  const tip = fxTip(el);
+  const g = svg.selectAll('g').data(items).join('g').attr('transform', (d, i) => `translate(0,${i * rowH})`);
+  g.append('text').attr('x', 0).attr('y', 13).attr('class', (d) => d.rec ? '' : 'muted').text((d) => d.label);
+  g.append('rect').attr('x', 0).attr('y', 20).attr('height', 10).attr('rx', 2).attr('width', (d) => x(d.price))
+    .style('fill', (d) => d.rec ? 'var(--fx-acc)' : 'var(--cds-chart-muted)')
+    .on('mouseenter', (ev, d) => tip.show(ev, d.rec ? `${eur(d.price)} · ${window.FX_CONFIG.recBooking}` : `${eur(d.price)} · ${d.note}`)).on('mouseleave', () => tip.hide());
+  g.append('text').attr('x', (d) => x(d.price) + 6).attr('y', 29).text((d) => eur(d.price))
+    .attr('data-source', (d) => d.rec ? 'combos' : 'alternatives').attr('data-field', (d) => d.rec ? 'total' : 'price')
+    .attr('data-where', (d) => d.rec ? `key=${REC.out}-${REC.back}` : `option=${encodeURIComponent(d.label)}`);
+});
+</script>
+
