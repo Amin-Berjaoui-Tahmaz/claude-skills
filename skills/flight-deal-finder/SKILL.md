@@ -57,49 +57,40 @@ Budget fares often exclude the overhead bin; Google shows "price does not includ
 - **Airlines whose add-ons aren't priced in Google Flights**: use the airline's own pages (extra-baggage page for the cabin-bag price; flex/cancellation add-on page). Add-ons advertised "from" a minimum go in as lower bounds (≥).
 - **Bot checks / CAPTCHAs** (e.g. "Press & Hold"): never solve them. Ask the user to do it in the browser pane, and carry on with other airlines in another tab meanwhile.
 
-## 4. Deliverable: visual dashboard (Data artifact type)
-Visuals, not prose, and a calm, designed look, not an "AI-coded" one. If you've already built one of these dashboards, reuse its `index.html` as the template, replacing only the data files and the route-specific words. Don't redesign from scratch unless asked.
+## 4. Deliverable: the fixed dashboard template
+The dashboard's look ships with this skill in `assets/dashboard.html`. Every run fills that file with data. Never design or restyle the page during a run; to change the design, see "Design changes" below.
 
-Data: fixed JSON files.
-- `oneway`: direction, airport, date, price, airline, departs, duration_min, layover_min, via. `price: null` means nothing fits.
-- `extras`: cabin_add, flex_add, how it was priced, checked or inferred.
-- `alternatives`: other ways to book.
+1. **Type:** run the Artifact quickstart with `intent: "other"` and create the dashboard from the **Data (Dashboard) type**. Never use a Doc or a plain HTML page.
+2. **Data:** upload three JSON files and add each one as a dataset (`kind: "file"`, `format: "json"`, `fixed: true`, plus `updated`). Use exactly these ids and fields, because the template reads them:
+   - `oneway`: one row per direction × airport × date, with direction (`"out"`/`"back"`), airport, date (`YYYY-MM-DD`), price, airline, departs, duration_min, layover_min, via and checked. `price: null` means nothing fits.
+   - `extras`: one row per priced `oneway` flight, with direction, airport, date, airline, cabin_add, flex_add, cabin_how, flex_how and checked (a date, or "inferred"). An unknown add-on is `null`.
+   - `alternatives`: option, price, note.
+3. **Page:** write `files/index.html` as a verbatim copy of `assets/dashboard.html`. Change only the `CONFIG` block at the top of the scripts:
+   - title and destination
+   - airports, in matrix order
+   - the recommended out/back pair
+   - the header, "why" and "cheaper, but" sentences
+   - the meta line
+   - `bestWithin`: the "best" threshold N from the interview
+   - `flexFromAirlines`
+   - the notes
+   
+   Nothing below `end CONFIG` changes. The template already declares every total and difference as a `dash.calc` (`combos`, `combosCabin`, `combosFlex`, `legs`), so don't add calcs or work numbers out in a script.
 
-All totals and differences are `dash.calc`s, never worked out in a script:
-- `combos`, `combosCabin`, `combosFlex`: every out × back pair, with `total` and `delta` (the difference from the cheapest).
-- `legs`: per one-way, the fare, cabin and flex prices and their deltas from the cheapest.
+The page has five parts: a header that leads with the recommendation, a boarding-pass card, every airport combination (price line and matrix, with a Fare / + Cabin bag / Flexible switch), fares by date, and folded "Other ways to book" and "Notes and method" sections.
 
-Layout, top to bottom, inside a centred column (max-width ~880px, `margin: 0 auto`):
-1. **Header**: title, then one sentence that leads with the **recommendation**, never with a different "cheapest" option. Only when another combination is cheaper, add "Out from X is €N cheaper (€M), but …" as a conditional drawing. Constraints go on one muted meta line; no chips.
-2. **Boarding-pass card**: route in large serif (e.g. LHR ⇄ ATH), the price, a dashed perforation line, one row per leg (date, time, airline, flight time, via, price), and a bottom strip with "With cabin bag" and "Flexible, cabin bag included" totals.
-3. **Every airport combination**, with a segmented switch: Fare only / + Cabin bag / Flexible. The switch redraws the price line, the matrix and both date tables.
-   - **Price line** above the matrix: every combination as a dot on one price axis. Nearby prices share one range label above and one "N options" label below.
-   - Dots are r≈7 (cheapest r≈9), nudged apart to at least 22px between centres, kept in price order, and never resized by price.
-   - Hovering a dot highlights its matrix cell and the reverse (`data-key` on cells, `data-k` on dots).
-   - **Matrix**: rows are out-from, columns are back-to, with the city name under each code. Each cell shows the total and, beneath it, "best" or "+€delta".
-4. **Fares by date**: outbound and return one-way tables in the same style. Each cell shows the price and "best" or "+delta"; the airline, time, duration and stopover go in a tooltip.
-5. **Folded `<details>`** at the bottom:
-   - "Other ways to book": bar chart with each label on its own line above its bar, and the recommended bar in ink.
-   - "Notes and method".
+### Design changes
+- Change the look only when the user asks. Show them options first (AskUserQuestion with previews, or Visualizer mock-ups on the real numbers); they want a say in the design. If they reject a direction, rethink the encoding itself (ink, bars, dot size, position), not just the palette.
+- Before rebuilding, make a backup copy: a new Data artifact with the same datasets and the same `index.html`.
+- Make every approved change in `assets/dashboard.html` in the skill's repo and commit it, then copy it to the artifact. The next run then starts from the new design. Where the repo can't be written (e.g. claude.ai), give the user the updated file to commit.
 
-### Visual rules (learned the hard way)
-- **Encode price with ink weight, not colour fills.** The cheapest cell is full ink; others fade linearly to about 38% opacity at the most expensive. No heatmap fills, no traffic lights, no blue gradients: they read as punchy or muddy.
-- **One accent colour, only for "the answer":** deep green, `--fx-acc: #1d7a5a`, or `#5cc49a` under `prefers-color-scheme: dark`. It appears only on:
-  - the recommended price and the "Recommended" label
-  - the active switch button
-  - every "best" cell and its sub-label
-  - the best dots on the price line and the cheapest group's label
-  - the recommended bar in "Other ways to book"
-  Everything else stays greyscale.
-- **Best = within N euros of the cheapest** in that table or line, where N comes from the interview. Store it as one constant in the page script (`BEST_WITHIN`), use it in an `isBest(v, min)` helper, and draw it into the footnote. The cheapest cell's sub-label says "best"; others within N show their "+delta" in green.
-- No chips, colour legends, card grids of notes, or repeated captions. One short footnote under the matrix explains it: "Darker means cheaper; small numbers are the extra cost over the cheapest. Green: within €N of the cheapest. ≥ means at least."
-- Charts inside a closed `<details>` have zero width, so text measures as 0. Skip drawing while `clientWidth` is 0, and call `dash.draw(name)` on the `toggle` event when the section opens. Prefer layouts that don't need text measuring.
-- Mark every number: put `data-source`/`data-field`/`data-where` on the value span (and on delta spans), not on the cell.
-
-### Design process
-- Before any redesign, **make a backup copy** first: a new Data artifact with the same datasets (re-upload the JSON assets) and the same `index.html`.
-- Give the user design options to pick from (AskUserQuestion with previews, or inline Visualizer mock-ups on the real numbers) before rebuilding. They want a say in the design.
-- When they reject a direction, rethink the encoding itself (ink, bars, dot size, position), not just the palette.
+### Design rationale (why the template looks this way; keep it when changing it)
+- **Price is shown with ink weight, not colour fills.** The cheapest cell is full ink; others fade to about 38% opacity at the most expensive. No heatmap fills, traffic lights or gradients.
+- **One accent colour, deep green (`--fx-acc`), used only for "the answer":** the recommended price and label, the active switch, the "best" cells and dots, and the recommended bar. Everything else is greyscale.
+- **Best = within `bestWithin` euros of the cheapest** in each table or line, and the footnote states this.
+- **The header leads with the recommendation, never with a different "cheapest" option.** The "X is €N cheaper, but …" sentence appears only when another pair is cheaper.
+- No chips, colour legends, card grids or repeated captions. One footnote under the matrix explains the encoding.
+- Charts in a closed `<details>` have zero width, so they're drawn on the `toggle` event. Every number carries `data-source`/`data-field`/`data-where` on its value span.
 
 ## 5. Hygiene
 - Re-check the winning flights at the end. Prices drift within an hour; flag any change.
